@@ -478,6 +478,35 @@ export default function SearchBar() {
           Search
         </button>
       </div>
+      <FindFlight
+        airlineLogo="https://companieslogo.com/img/orig/INDIGO.NS-77f45585.png?t=1745724543"
+        airlineName="IndiGo"
+        departureTime="4:40 PM"
+        arrivalTime="6:20 PM"
+        duration="1 hr 55 min"
+        stops="Nonstop"
+        route="KTM–DEL"
+        co2="71 kg CO2e"
+        co2Percent="-24%"
+        price="28,523"
+        currency="NPR"
+        tripType="round trip"
+      />
+
+      <FindFlight
+        airlineLogo="https://c8.alamy.com/comp/KW3RE3/the-royal-nepal-airlines-logo-represents-the-national-airline-of-nepal-KW3RE3.jpg"
+        airlineName="IndiGo"
+        departureTime="4:40 PM"
+        arrivalTime="6:20 PM"
+        duration="1 hr 55 min"
+        stops="Nonstop"
+        route="KTM–DEL"
+        co2="71 kg CO2e"
+        co2Percent="-24%"
+        price="28,523"
+        currency="NPR"
+        tripType="round trip"
+      />
     </div>
   );
 }
