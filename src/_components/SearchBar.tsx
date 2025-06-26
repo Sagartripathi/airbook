@@ -16,6 +16,24 @@ import { fetchAirports } from "./utils/FetchAirports";
 
 type Airport = { title: string; skyId: string; subtitle?: string };
 
+const tripTypeOptions = [
+  { label: "Round trip", value: "round_trip" },
+  { label: "One way", value: "one_way" },
+];
+
+const cabinOptions = [
+  { label: "Economy", value: "economy" },
+  { label: "Business", value: "business" },
+  { label: "First", value: "first" },
+];
+
+const stopsOptions = [
+  { label: "None", value: "none" },
+  { label: "1 stop", value: "1" },
+  { label: "2 stops", value: "2" },
+  { label: "3 stops", value: "3" },
+];
+
 export default function SearchBar() {
   const [tripType, setTripType] = useState("one_way");
   const [passengers, setPassengers] = useState(1);
@@ -94,24 +112,6 @@ export default function SearchBar() {
     setFlightResults(flights);
     setLoading(false);
   };
-
-  const tripTypeOptions = [
-    { label: "Round trip", value: "round_trip" },
-    { label: "One way", value: "one_way" },
-  ];
-
-  const cabinOptions = [
-    { label: "Economy", value: "economy" },
-    { label: "Business", value: "business" },
-    { label: "First", value: "first" },
-  ];
-
-  const stopsOptions = [
-    { label: "None", value: "none" },
-    { label: "1 stop", value: "1" },
-    { label: "2 stops", value: "2" },
-    { label: "3 stops", value: "3" },
-  ];
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gray-900">
@@ -289,31 +289,45 @@ export default function SearchBar() {
             const currency =
               flight.priceBreakdown?.total?.currencyCode ?? "USD";
 
-            const totalTime = segment?.totalTime ?? 0;
-            const duration =
-              typeof totalTime === "number"
-                ? `${Math.floor(totalTime / 3600)}h ${Math.floor(
-                    (totalTime % 3600) / 60,
-                  )}m`
-                : "";
+            const departureTimeObj = segment?.departureTime
+              ? new Date(segment.departureTime)
+              : null;
+            const arrivalTimeObj = segment?.arrivalTime
+              ? new Date(segment.arrivalTime)
+              : null;
+
+            // Format times in 12-hour AM/PM format
+            const departureTime = departureTimeObj
+              ? departureTimeObj.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : "";
+
+            const arrivalTime = arrivalTimeObj
+              ? arrivalTimeObj.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : "";
+
+            // Calculate duration using arrival - departure
+            let duration = "";
+            if (departureTimeObj && arrivalTimeObj) {
+              const diffMs =
+                arrivalTimeObj.getTime() - departureTimeObj.getTime();
+              const durationMinutes = Math.floor(diffMs / (1000 * 60));
+              const hours = Math.floor(durationMinutes / 60);
+              const minutes = durationMinutes % 60;
+              duration = `${hours}h ${minutes}m`;
+            }
 
             const route = segment
               ? `${segment.departureAirport?.cityName ?? ""} → ${
                   segment.arrivalAirport?.cityName ?? ""
                 }`
-              : "";
-
-            const departureTime = segment?.departureTime
-              ? new Date(segment.departureTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "";
-            const arrivalTime = segment?.arrivalTime
-              ? new Date(segment.arrivalTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
               : "";
 
             return (
@@ -328,8 +342,6 @@ export default function SearchBar() {
                 duration={duration}
                 stops={stops}
                 route={route}
-                co2="~120kg CO₂"
-                co2Percent="30% less"
                 price={price}
                 currency={currency}
                 tripType={tripType}
