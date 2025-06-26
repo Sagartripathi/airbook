@@ -29,7 +29,7 @@ export default function SearchBar() {
   const [toSuggestions, setToSuggestions] = useState<Airport[]>([]);
   const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [showToSuggestions, setShowToSuggestions] = useState(false);
-  const [flightResults, setFlightResults] = useState<any[]>([]);
+  const [flightResults, setFlightResults] = useState<anygit[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fromDebounce = useRef<NodeJS.Timeout | null>(null);
@@ -270,8 +270,6 @@ export default function SearchBar() {
           Search
         </button>
       </div>
-<<<<<<< Updated upstream
-=======
 
       <div className="mt-10 w-full max-w-4xl px-4">
         {loading && <p className="text-white">Loading flights...</p>}
@@ -339,7 +337,6 @@ export default function SearchBar() {
             );
           })}
       </div>
->>>>>>> Stashed changes
     </div>
   );
 }
