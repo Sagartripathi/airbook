@@ -9,15 +9,15 @@ import {
 } from "react-icons/fa";
 import { MdOutlineCalendarToday } from "react-icons/md";
 
+import { fetchFlights } from "./utils/FetchFlights";
 import FlightResultCard from "./FlightResultCard";
 import Dropdown from "./utils/Dropdown";
-import { fetchFlights } from "./utils/FetchFlights";
 import { fetchAirports } from "./utils/FetchAirports";
 
 type Airport = { title: string; skyId: string; subtitle?: string };
 
 export default function SearchBar() {
-  const [tripType, setTripType] = useState("round_trip");
+  const [tripType, setTripType] = useState("one_way");
   const [passengers, setPassengers] = useState(1);
   const [cabin, setCabin] = useState("economy");
   const [stops, setStops] = useState("none");
@@ -29,7 +29,7 @@ export default function SearchBar() {
   const [toSuggestions, setToSuggestions] = useState<Airport[]>([]);
   const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [showToSuggestions, setShowToSuggestions] = useState(false);
-  const [flightResults, setFlightResults] = useState<anygit[]>([]);
+  const [flightResults, setFlightResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fromDebounce = useRef<NodeJS.Timeout | null>(null);
