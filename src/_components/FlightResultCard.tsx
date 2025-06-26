@@ -58,7 +58,7 @@ export default function FlightResultCard({
         <span className="text-lg font-bold text-green-400">
           {currency} {price}
         </span>
-        <span className="text-xs text-gray-400">{tripType}</span>
+        <span className="text-xs text-gray-400">{tripType} </span>
       </div>
     </div>
   );
