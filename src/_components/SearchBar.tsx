@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -8,274 +8,44 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { MdOutlineCalendarToday } from "react-icons/md";
-import FindFlight from "./FindFlight";
 
-const suggestions = [
-  {
-    skyId: "IND",
-    entityId: "95673608",
-    presentation: {
-      title: "Indianapolis",
-      suggestionTitle: "Indianapolis (IND)",
-      subtitle: "United States",
-    },
-    navigation: {
-      entityId: "95673608",
-      entityType: "AIRPORT",
-      localizedName: "Indianapolis",
-      relevantFlightParams: {
-        skyId: "IND",
-        entityId: "95673608",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Indianapolis",
-      },
-      relevantHotelParams: {
-        entityId: "27542857",
-        entityType: "CITY",
-        localizedName: "Indianapolis",
-      },
-    },
-  },
-  {
-    skyId: "DEL",
-    entityId: "95673498",
-    presentation: {
-      title: "Indira Gandhi International ",
-      suggestionTitle: "Indira Gandhi International  (DEL)",
-      subtitle: "India",
-    },
-    navigation: {
-      entityId: "95673498",
-      entityType: "AIRPORT",
-      localizedName: "Indira Gandhi International ",
-      relevantFlightParams: {
-        skyId: "DEL",
-        entityId: "95673498",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Indira Gandhi International ",
-      },
-      relevantHotelParams: {
-        entityId: "27540706",
-        entityType: "CITY",
-        localizedName: "New Delhi",
-      },
-    },
-  },
-  {
-    skyId: "IN",
-    entityId: "29475284",
-    presentation: {
-      title: "India",
-      suggestionTitle: "India",
-      subtitle: "",
-    },
-    navigation: {
-      entityId: "29475284",
-      entityType: "COUNTRY",
-      localizedName: "India",
-      relevantFlightParams: {
-        skyId: "IN",
-        entityId: "29475284",
-        flightPlaceType: "COUNTRY",
-        localizedName: "India",
-      },
-      relevantHotelParams: {
-        entityId: "29475284",
-        entityType: "COUNTRY",
-        localizedName: "India",
-      },
-    },
-  },
-  {
-    skyId: "ID",
-    entityId: "29475321",
-    presentation: {
-      title: "Indonesia",
-      suggestionTitle: "Indonesia",
-      subtitle: "",
-    },
-    navigation: {
-      entityId: "29475321",
-      entityType: "COUNTRY",
-      localizedName: "Indonesia",
-      relevantFlightParams: {
-        skyId: "ID",
-        entityId: "29475321",
-        flightPlaceType: "COUNTRY",
-        localizedName: "Indonesia",
-      },
-      relevantHotelParams: {
-        entityId: "29475321",
-        entityType: "COUNTRY",
-        localizedName: "Indonesia",
-      },
-    },
-  },
-  {
-    skyId: "IDR",
-    entityId: "128667504",
-    presentation: {
-      title: "Indore",
-      suggestionTitle: "Indore (IDR)",
-      subtitle: "India",
-    },
-    navigation: {
-      entityId: "128667504",
-      entityType: "AIRPORT",
-      localizedName: "Indore",
-      relevantFlightParams: {
-        skyId: "IDR",
-        entityId: "128667504",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Indore",
-      },
-      relevantHotelParams: {
-        entityId: "27542801",
-        entityType: "CITY",
-        localizedName: "Indore",
-      },
-    },
-  },
-  {
-    skyId: "BOM",
-    entityId: "95673320",
-    presentation: {
-      title: "Mumbai",
-      suggestionTitle: "Mumbai (BOM)",
-      subtitle: "India",
-    },
-    navigation: {
-      entityId: "95673320",
-      entityType: "AIRPORT",
-      localizedName: "Mumbai",
-      relevantFlightParams: {
-        skyId: "BOM",
-        entityId: "95673320",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Mumbai",
-      },
-      relevantHotelParams: {
-        entityId: "27539520",
-        entityType: "CITY",
-        localizedName: "Mumbai",
-      },
-    },
-  },
-  {
-    skyId: "HYD",
-    entityId: "128668073",
-    presentation: {
-      title: "Hyderabad",
-      suggestionTitle: "Hyderabad (HYD)",
-      subtitle: "India",
-    },
-    navigation: {
-      entityId: "128668073",
-      entityType: "AIRPORT",
-      localizedName: "Hyderabad",
-      relevantFlightParams: {
-        skyId: "HYD",
-        entityId: "128668073",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Hyderabad",
-      },
-      relevantHotelParams: {
-        entityId: "27542764",
-        entityType: "CITY",
-        localizedName: "Hyderabad",
-      },
-    },
-  },
-  {
-    skyId: "NDC",
-    entityId: "129055570",
-    presentation: {
-      title: "Nanded",
-      suggestionTitle: "Nanded (NDC)",
-      subtitle: "India",
-    },
-    navigation: {
-      entityId: "129055570",
-      entityType: "AIRPORT",
-      localizedName: "Nanded",
-      relevantFlightParams: {
-        skyId: "NDC",
-        entityId: "129055570",
-        flightPlaceType: "AIRPORT",
-        localizedName: "Nanded",
-      },
-      relevantHotelParams: {
-        entityId: "27545097",
-        entityType: "CITY",
-        localizedName: "Nanded",
-      },
-    },
-  },
-];
+import { fetchFlights } from "./utils/FetchFlights";
+import FlightResultCard from "./FlightResultCard";
+import Dropdown from "./utils/Dropdown";
+import { fetchAirports } from "./utils/FetchAirports";
 
-// async function fetchAirports(query: string): Promise<string[]> {
-//   if (!query) return [];
-//     const url = `https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport?query=${encodeURIComponent(query)}&locale=en-US`;
-//     const options = {
-//       method: "GET",
-//       headers: {
-//         "x-rapidapi-key": "876166b337mshbeb626c58ef91c3p1781f8jsnca8519f586fe",
-//         "x-rapidapi-host": "sky-scrapper.p.rapidapi.com",
-//       },
-//     };
-//   try {
-//     const response = await fetch(url, options);
-//     const result = await response.json();
-//     console.log("result", result);
-//     return result.data?.map((item) => item.presentation.suggestionTitle) || [];
-//   } catch (error) {
-//     return [];
-//   }
-// }
-
-// Simulate fetchAirports with your format
-async function fetchAirports(query: string) {
-  await new Promise((res) => setTimeout(res, 100)); // Simulate async
-  return {
-    data: suggestions
-      .filter(
-        (s) =>
-          s.presentation.suggestionTitle
-            .toLowerCase()
-            .includes(query.toLowerCase()) ||
-          s.presentation.title.toLowerCase().includes(query.toLowerCase()) ||
-          s.skyId.toLowerCase().includes(query.toLowerCase()),
-      )
-      .map((s) => s.presentation.suggestionTitle),
-  };
-}
+type Airport = { title: string; skyId: string; subtitle?: string };
 
 export default function SearchBar() {
-  const [tripType, setTripType] = useState("Round trip");
+  const [tripType, setTripType] = useState("one_way");
   const [passengers, setPassengers] = useState(1);
-  const [cabin, setCabin] = useState("Economy");
+  const [cabin, setCabin] = useState("economy");
+  const [stops, setStops] = useState("none");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [departure, setDeparture] = useState<Date | null>(null);
-  const [fromSuggestions, setFromSuggestions] = useState(suggestions);
-  const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
-  const [toSuggestions, setToSuggestions] = useState(suggestions);
-  const [showSuggestions, setShowToSuggestions] = useState(false);
-  const fromDebounceRef = useRef<NodeJS.Timeout | null>(null);
-  const toDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [fromSuggestions, setFromSuggestions] = useState<Airport[]>([]);
+  const [toSuggestions, setToSuggestions] = useState<Airport[]>([]);
+  const [showFromSuggestions, setShowFromSuggestions] = useState(false);
+  const [showToSuggestions, setShowToSuggestions] = useState(false);
+  const [flightResults, setFlightResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fromDebounce = useRef<NodeJS.Timeout | null>(null);
+  const toDebounce = useRef<NodeJS.Timeout | null>(null);
 
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFrom(value);
     setShowFromSuggestions(true);
 
-    if (fromDebounceRef.current) clearTimeout(fromDebounceRef.current);
-    if (value.length >= 3) {
-      fromDebounceRef.current = setTimeout(async () => {
-        const result = await fetchAirports(value);
-        setFromSuggestions(result);
-      }, 1000);
+    if (fromDebounce.current) clearTimeout(fromDebounce.current);
+    if (value.length >= 2) {
+      fromDebounce.current = setTimeout(async () => {
+        const suggestions = await fetchAirports(value);
+        setFromSuggestions(suggestions);
+      }, 500);
     } else {
       setFromSuggestions([]);
     }
@@ -286,49 +56,79 @@ export default function SearchBar() {
     setTo(value);
     setShowToSuggestions(true);
 
-    if (toDebounceRef.current) clearTimeout(toDebounceRef.current);
+    if (toDebounce.current) clearTimeout(toDebounce.current);
     if (value.length >= 3) {
-      toDebounceRef.current = setTimeout(async () => {
-        setToSuggestions(await fetchAirports(value));
-      }, 1000);
+      toDebounce.current = setTimeout(async () => {
+        const suggestions = await fetchAirports(value);
+        setToSuggestions(suggestions);
+      }, 500);
     } else {
       setToSuggestions([]);
     }
   };
 
-  const handleTripTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setTripType(value);
-    if (value === "One way") setReturnDate(null);
+  const handleSwap = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
   };
 
-  const handleSwap = () => {
-    setFrom(to);
-    setTo(from);
+  const handleSearch = async () => {
+    const fromObj = fromSuggestions.find((item) => item.title === from);
+    const toObj = toSuggestions.find((item) => item.title === to);
+
+    if (!fromObj || !toObj || !departure) return;
+
+    setLoading(true);
+
+    const flights = await fetchFlights({
+      fromId: fromObj.skyId,
+      toId: toObj.skyId,
+      departDate: departure.toISOString().split("T")[0],
+      adults: passengers,
+      cabinClass: cabin.toUpperCase(),
+      stops,
+      currencyCode: "USD",
+    });
+
+    setFlightResults(flights);
+    setLoading(false);
   };
+
+  const tripTypeOptions = [
+    { label: "Round trip", value: "round_trip" },
+    { label: "One way", value: "one_way" },
+  ];
+
+  const cabinOptions = [
+    { label: "Economy", value: "economy" },
+    { label: "Business", value: "business" },
+    { label: "First", value: "first" },
+  ];
+
+  const stopsOptions = [
+    { label: "None", value: "none" },
+    { label: "1 stop", value: "1" },
+    { label: "2 stops", value: "2" },
+    { label: "3 stops", value: "3" },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gray-900">
       <div className="flex w-full flex-col items-center bg-gray-900 py-12">
         <h1 className="mb-8 text-5xl font-bold text-white">Flights</h1>
       </div>
+
       <div className="z-10 mt-[-3rem] flex w-full max-w-2xl flex-col gap-6 rounded-2xl bg-gray-800 p-6 shadow-lg md:p-8">
-        {/* Top Controls */}
-        <div className="flex flex-col items-center gap-4 md:flex-row">
+        <div className="flex flex-col flex-wrap items-center gap-4 md:flex-row">
+          <Dropdown
+            value={tripType}
+            onChange={(e) => setTripType(e.target.value)}
+            options={tripTypeOptions}
+          />
+
           <div className="flex items-center gap-2">
-            <select
-              className="bg-transparent text-lg font-medium text-gray-200 focus:outline-none"
-              value={tripType}
-              onChange={handleTripTypeChange}
-            >
-              <option>Round trip</option>
-              <option>One way</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl text-gray-300">
-              <FaUser />
-            </span>
+            <FaUser className="text-xl text-gray-300" />
             <input
               type="number"
               min={1}
@@ -337,32 +137,33 @@ export default function SearchBar() {
               onChange={(e) => setPassengers(Number(e.target.value))}
             />
           </div>
-          <div>
-            <select
-              className="bg-transparent text-lg font-medium text-gray-200 focus:outline-none"
-              value={cabin}
-              onChange={(e) => setCabin(e.target.value)}
-            >
-              <option>Economy</option>
-              <option>Business</option>
-              <option>First</option>
-            </select>
-          </div>
+
+          <Dropdown
+            value={cabin}
+            onChange={(e) => setCabin(e.target.value)}
+            options={cabinOptions}
+          />
+
+          <Dropdown
+            value={stops}
+            onChange={(e) => setStops(e.target.value)}
+            options={stopsOptions}
+          />
         </div>
 
         <div className="flex w-full items-center gap-2">
           <div className="relative flex flex-1 items-center gap-3 rounded-xl bg-gray-900 px-4 py-4">
             <FaCircle className="text-xl text-blue-400" />
             <input
-              className="w-full bg-transparent text-lg font-semibold text-white focus:outline-none"
               value={from}
               onChange={handleFromChange}
-              placeholder="From"
-              autoComplete="off"
               onFocus={() => setShowFromSuggestions(true)}
               onBlur={() =>
-                setTimeout(() => setShowFromSuggestions(false), 100)
+                setTimeout(() => setShowFromSuggestions(false), 200)
               }
+              placeholder="From"
+              className="w-full bg-transparent text-lg font-semibold text-white focus:outline-none"
+              autoComplete="off"
             />
             {showFromSuggestions && fromSuggestions.length > 0 && (
               <ul className="absolute top-full left-0 z-10 mt-1 max-h-56 w-full overflow-y-auto rounded bg-gray-800 shadow">
@@ -371,11 +172,12 @@ export default function SearchBar() {
                     key={idx}
                     className="cursor-pointer px-4 py-2 text-white hover:bg-gray-700"
                     onMouseDown={() => {
-                      setFrom(s.presentation.suggestionTitle);
+                      setFrom(s.title);
                       setShowFromSuggestions(false);
                     }}
                   >
-                    {s.presentation.suggestionTitle}
+                    <div>{s.title}</div>
+                    <div className="text-sm text-gray-400">{s.subtitle}</div>
                   </li>
                 ))}
               </ul>
@@ -383,40 +185,40 @@ export default function SearchBar() {
           </div>
 
           <button
-            type="button"
             className="mx-1 rounded-full bg-gray-700 p-2 text-blue-400"
             onClick={handleSwap}
-            aria-label="Swap"
           >
             <FaExchangeAlt className="text-lg" />
           </button>
+
           <div className="relative flex-1">
             <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-4">
               <FaMapMarkerAlt className="text-xl text-blue-400" />
               <input
-                className="w-full bg-transparent text-lg font-semibold text-white focus:outline-none"
                 value={to}
                 onChange={handleToChange}
-                placeholder="To"
-                autoComplete="off"
                 onFocus={() => setShowToSuggestions(true)}
                 onBlur={() =>
-                  setTimeout(() => setShowToSuggestions(false), 100)
+                  setTimeout(() => setShowToSuggestions(false), 200)
                 }
+                placeholder="To"
+                className="w-full bg-transparent text-lg font-semibold text-white focus:outline-none"
+                autoComplete="off"
               />
             </div>
-            {showSuggestions && suggestions.length > 0 && (
+            {showToSuggestions && toSuggestions.length > 0 && (
               <ul className="absolute top-full left-0 z-10 mt-1 max-h-56 w-full overflow-y-auto rounded bg-gray-800 shadow">
                 {toSuggestions.map((s, idx) => (
                   <li
                     key={idx}
                     className="cursor-pointer px-4 py-2 text-white hover:bg-gray-700"
                     onMouseDown={() => {
-                      setTo(s.presentation.suggestionTitle);
+                      setTo(s.title);
                       setShowToSuggestions(false);
                     }}
                   >
-                    {s.presentation.suggestionTitle}
+                    <div>{s.title}</div>
+                    <div className="text-sm text-gray-400">{s.subtitle}</div>
                   </li>
                 ))}
               </ul>
@@ -424,12 +226,9 @@ export default function SearchBar() {
           </div>
         </div>
 
-        {/* Date Pickers */}
-        {tripType === "One way" ? (
+        {tripType === "one_way" ? (
           <div className="relative mt-2 flex w-full items-center rounded-xl bg-gray-900 px-4 py-4">
-            <span className="absolute left-4">
-              <MdOutlineCalendarToday className="text-2xl text-white" />
-            </span>
+            <MdOutlineCalendarToday className="absolute left-4 text-2xl text-white" />
             <DatePicker
               selected={departure}
               onChange={(date) => setDeparture(date)}
@@ -441,9 +240,7 @@ export default function SearchBar() {
         ) : (
           <div className="mt-2 flex w-full flex-col gap-2">
             <div className="relative flex w-full items-center rounded-xl bg-gray-900 px-4 py-4">
-              <span className="absolute left-4">
-                <MdOutlineCalendarToday className="text-2xl text-white" />
-              </span>
+              <MdOutlineCalendarToday className="absolute left-4 text-2xl text-white" />
               <DatePicker
                 selected={departure}
                 onChange={(date) => setDeparture(date)}
@@ -453,9 +250,7 @@ export default function SearchBar() {
               />
             </div>
             <div className="relative flex w-full items-center rounded-xl bg-gray-900 px-4 py-4">
-              <span className="absolute left-4">
-                <MdOutlineCalendarToday className="text-2xl text-white" />
-              </span>
+              <MdOutlineCalendarToday className="absolute left-4 text-2xl text-white" />
               <DatePicker
                 selected={returnDate}
                 onChange={(date) => setReturnDate(date)}
@@ -467,46 +262,81 @@ export default function SearchBar() {
             </div>
           </div>
         )}
-        {/* Search Button */}
+
         <button
-          type="button"
-          className="mt-4 w-full rounded-xl bg-blue-600 py-3 text-xl font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
-          onClick={() => {
-            FindFlight();
-          }}
+          className="mt-4 w-full rounded-xl bg-blue-600 py-3 text-xl font-semibold text-white hover:bg-blue-700"
+          onClick={handleSearch}
         >
           Search
         </button>
       </div>
-      <FindFlight
-        airlineLogo="https://companieslogo.com/img/orig/INDIGO.NS-77f45585.png?t=1745724543"
-        airlineName="IndiGo"
-        departureTime="4:40 PM"
-        arrivalTime="6:20 PM"
-        duration="1 hr 55 min"
-        stops="Nonstop"
-        route="KTM–DEL"
-        co2="71 kg CO2e"
-        co2Percent="-24%"
-        price="28,523"
-        currency="NPR"
-        tripType="round trip"
-      />
 
-      <FindFlight
-        airlineLogo="https://c8.alamy.com/comp/KW3RE3/the-royal-nepal-airlines-logo-represents-the-national-airline-of-nepal-KW3RE3.jpg"
-        airlineName="IndiGo"
-        departureTime="4:40 PM"
-        arrivalTime="6:20 PM"
-        duration="1 hr 55 min"
-        stops="Nonstop"
-        route="KTM–DEL"
-        co2="71 kg CO2e"
-        co2Percent="-24%"
-        price="28,523"
-        currency="NPR"
-        tripType="round trip"
-      />
+      <div className="mt-10 w-full max-w-4xl px-4">
+        {loading && <p className="text-white">Loading flights...</p>}
+
+        {!loading &&
+          flightResults.map((flight, idx) => {
+            const segment = flight.segments?.[0];
+            const leg = segment?.legs?.[0];
+
+            const carrierData =
+              leg?.carriersData?.[0] ||
+              segment?.carriersData?.[0] ||
+              (flight.priceBreakdown?.carrierTaxBreakdown?.[0]?.carrier ?? {});
+
+            const basePrice = Number(flight.priceBreakdown?.total?.units ?? 0);
+            const price = (basePrice * passengers).toFixed(2);
+            const currency =
+              flight.priceBreakdown?.total?.currencyCode ?? "USD";
+
+            const totalTime = segment?.totalTime ?? 0;
+            const duration =
+              typeof totalTime === "number"
+                ? `${Math.floor(totalTime / 3600)}h ${Math.floor(
+                    (totalTime % 3600) / 60,
+                  )}m`
+                : "";
+
+            const route = segment
+              ? `${segment.departureAirport?.cityName ?? ""} → ${
+                  segment.arrivalAirport?.cityName ?? ""
+                }`
+              : "";
+
+            const departureTime = segment?.departureTime
+              ? new Date(segment.departureTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "";
+            const arrivalTime = segment?.arrivalTime
+              ? new Date(segment.arrivalTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "";
+
+            return (
+              <FlightResultCard
+                key={idx}
+                airlineLogo={
+                  carrierData.logo || carrierData.logoUrl || carrierData.image
+                }
+                airlineName={carrierData.name}
+                departureTime={departureTime}
+                arrivalTime={arrivalTime}
+                duration={duration}
+                stops={stops}
+                route={route}
+                co2="~120kg CO₂"
+                co2Percent="30% less"
+                price={price}
+                currency={currency}
+                tripType={tripType}
+              />
+            );
+          })}
+      </div>
     </div>
   );
 }
