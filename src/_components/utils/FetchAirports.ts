@@ -33,12 +33,10 @@ export async function fetchAirports(query: string): Promise<Airport[]> {
         skyId: item.id ?? "",
         subtitle: item.cityName || item.regionName || item.countryName || "",
       })) ?? [];
-
-    console.log(suggestions);
-
+    //since we only hit max 20 api call for free version , so we are using the concept of caching also
     airportMemoCache.set(key, suggestions);
     return suggestions;
-  } catch (err: any) {
+  } catch {
     return [];
   }
 }

@@ -74,6 +74,7 @@ export default function SearchBar() {
     setTo(value);
     setShowToSuggestions(true);
 
+    //i am performing debounching operation
     if (toDebounce.current) clearTimeout(toDebounce.current);
     if (value.length >= 3) {
       toDebounce.current = setTimeout(async () => {
@@ -99,6 +100,7 @@ export default function SearchBar() {
 
     setLoading(true);
 
+    //calling fetchflight component
     const flights = await fetchFlights({
       fromId: fromObj.skyId,
       toId: toObj.skyId,
@@ -165,6 +167,7 @@ export default function SearchBar() {
               className="w-full bg-transparent text-lg font-semibold text-white focus:outline-none"
               autoComplete="off"
             />
+            {/* showing suggestion of airport */}
             {showFromSuggestions && fromSuggestions.length > 0 && (
               <ul className="absolute top-full left-0 z-10 mt-1 max-h-56 w-full overflow-y-auto rounded bg-gray-800 shadow">
                 {fromSuggestions.map((s, idx) => (
